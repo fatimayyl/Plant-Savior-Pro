@@ -29,11 +29,21 @@ class ResultActivity : AppCompatActivity() {
 
         findViewById<TextView>(R.id.tvResultDiseaseName).text = advice.displayName
 
+
         findViewById<TextView>(R.id.tvConfidenceLabel).text = when {
             confidencePct >= 90 -> "✅ Çok Yüksek Güven"
             confidencePct >= 70 -> "👍 Yüksek Güven"
             confidencePct >= 50 -> "⚠️ Orta Güven"
             else -> "❗ Düşük Güven"
+        }
+
+        // Güven düşükse uyarı göster
+        if (confidencePct < 50) {
+            androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("⚠️ Düşük Güven")
+                .setMessage("Model bu görselden emin değil (%${"%.0f".format(confidencePct)}). Lütfen daha net bir yaprak fotoğrafı çekin.")
+                .setPositiveButton("Tamam", null)
+                .show()
         }
 
         // Diğer hastalıklar
