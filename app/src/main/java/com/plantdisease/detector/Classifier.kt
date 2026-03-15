@@ -64,10 +64,10 @@ class Classifier(private val context: Context) {
             val g = ((pixel shr 8)  and 0xFF).toFloat()
             val b = ( pixel         and 0xFF).toFloat()
 
-            // EfficientNet preprocessing: (x / 255 - mean) / std
-            inputBuffer.putFloat((r / 255.0f - 0.485f) / 0.229f)
-            inputBuffer.putFloat((g / 255.0f - 0.456f) / 0.224f)
-            inputBuffer.putFloat((b / 255.0f - 0.406f) / 0.225f)
+            // EfficientNet preprocess_input: değerleri olduğu gibi kullan (0-255)
+            inputBuffer.putFloat(r)
+            inputBuffer.putFloat(g)
+            inputBuffer.putFloat(b)
         }
 
         val output = Array(1) { FloatArray(NUM_CLASSES) }
