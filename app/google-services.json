@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "958899440370",
+    "project_id": "plantsaviorpro",
+    "storage_bucket": "plantsaviorpro.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:958899440370:android:1b785f0e4ff45cca3b1e6b",
+        "android_client_info": {
+          "package_name": "com.plantdisease.detector"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "958899440370-shps7q731ib0kfuqfuvtqg2emulrrr5n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.plantdisease.detector",
+            "certificate_hash": "6f8b60094b4101547a839909d6d4bcdbdd8a8ea2"
+          }
+        },
+        {
+          "client_id": "958899440370-v0su4fcemr0305200msc5emn3ikeqs69.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3L0lZYlffTJp2Jgdta9hBNhSJDFjxypc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "958899440370-v0su4fcemr0305200msc5emn3ikeqs69.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
