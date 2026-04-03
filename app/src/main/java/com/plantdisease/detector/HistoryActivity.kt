@@ -5,12 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -58,7 +58,7 @@ class HistoryActivity : AppCompatActivity() {
         supportActionBar?.hide()
 
         // Geri butonu
-        findViewById<TextView>(R.id.btnBack).setOnClickListener {
+        findViewById<LinearLayout>(R.id.btnBack).setOnClickListener {
             finish()
         }
 
@@ -91,22 +91,17 @@ class HistoryActivity : AppCompatActivity() {
             }
 
         // Bottom Nav
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
-        bottomNav.selectedItemId = R.id.nav_history
-        bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finishAffinity()
-                    true
-                }
-                R.id.nav_history -> true
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
-                    true
-                }
-                else -> false
-            }
+        findViewById<LinearLayout>(R.id.navHome).setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+            finishAffinity()
+        }
+
+        findViewById<LinearLayout>(R.id.navHistory).setOnClickListener {
+            // Zaten geçmiş sayfasındayız
+        }
+
+        findViewById<LinearLayout>(R.id.navProfile).setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
     }
 }

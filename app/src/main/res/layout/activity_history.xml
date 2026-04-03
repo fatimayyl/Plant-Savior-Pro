@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#1B5E20">
+    android:background="#E8F5E9">
 
     <!-- HEADER -->
     <LinearLayout
@@ -11,21 +11,30 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingTop="48dp"
-        android:paddingBottom="16dp"
-        android:paddingHorizontal="20dp">
+        android:paddingTop="36dp"
+        android:paddingBottom="20dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp">
 
-        <TextView
+        <!-- Geri Butonu -->
+        <LinearLayout
             android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="←"
-            android:textSize="28sp"
-            android:textColor="#FFFFFF"
-            android:paddingEnd="16dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:gravity="center"
+            android:background="@drawable/bg_nav_active"
             android:clickable="true"
-            android:focusable="true"/>
+            android:focusable="true">
 
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_arrow_back"
+                android:importantForAccessibility="no"/>
+
+        </LinearLayout>
+
+        <!-- Başlık -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -36,21 +45,27 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="PLANT SAVIOR "
-                    android:textSize="20sp"
+                    android:text="PLANT SAVIOR"
+                    android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="#FFFFFF"/>
+                    android:textColor="#1B5E20"
+                    android:letterSpacing="0.05"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="PRO"
-                    android:textSize="20sp"
+                    android:text=" PRO"
+                    android:textSize="12sp"
                     android:textStyle="bold"
-                    android:textColor="#69F0AE"/>
+                    android:textColor="#43A047"
+                    android:letterSpacing="0.1"/>
+
             </LinearLayout>
 
             <TextView
@@ -58,33 +73,127 @@
                 android:layout_height="wrap_content"
                 android:text="Tarama Geçmişi"
                 android:textSize="11sp"
-                android:textColor="#A5D6A7"/>
+                android:textColor="#66BB6A"
+                android:layout_marginTop="2dp"/>
 
         </LinearLayout>
 
-        <View android:layout_width="44dp" android:layout_height="1dp"/>
+        <!-- Sağ boşluk (denge için) -->
+        <View
+            android:layout_width="36dp"
+            android:layout_height="1dp"/>
 
     </LinearLayout>
 
-    <!-- LİSTE -->
+    <!-- BEYAZ KART -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvHistory"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#FFFFFF"
+        android:background="@drawable/bg_rounded_top"
         android:padding="16dp"
         android:clipToPadding="false"/>
 
     <!-- BOTTOM NAV -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNav"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="64dp"
+        android:orientation="horizontal"
         android:background="#FFFFFF"
-        app:menu="@menu/bottom_nav_menu"
-        app:itemIconTint="#2E7D32"
-        app:itemTextColor="#2E7D32"
-        xmlns:app="http://schemas.android.com/apk/res-auto"/>
+        android:elevation="8dp">
+
+        <LinearLayout
+            android:id="@+id/navHome"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_home"
+                android:importantForAccessibility="no"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ana Sayfa"
+                android:textSize="10sp"
+                android:textColor="#AAAAAA"
+                android:layout_marginTop="2dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navHistory"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+
+            <FrameLayout
+                android:layout_width="32dp"
+                android:layout_height="32dp">
+
+                <View
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_nav_active"/>
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_history"
+                    android:importantForAccessibility="no"/>
+
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Geçmiş"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="#2E7D32"
+                android:layout_marginTop="2dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navProfile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_profile"
+                android:importantForAccessibility="no"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Profil"
+                android:textSize="10sp"
+                android:textColor="#AAAAAA"
+                android:layout_marginTop="2dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

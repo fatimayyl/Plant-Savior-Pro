@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="56dp"
+    android:height="56dp"
+    android:viewportWidth="56"
+    android:viewportHeight="56">
+
+    <!-- Arka plan daire -->
+    <path
+        android:fillColor="#C8E6C9"
+        android:pathData="M28,0 C43.464,0 56,12.536 56,28 C56,43.464 43.464,56 28,56 C12.536,56 0,43.464 0,28 C0,12.536 12.536,0 28,0 Z"/>
+
+    <!-- Orta yaprak (koyu yeşil) -->
+    <path
+        android:fillColor="#388E3C"
+        android:pathData="M28,38 C28,38 20,32 20,24 C20,18 24,15 28,16 C32,15 36,18 36,24 C36,32 28,38 28,38 Z"/>
+
+    <!-- Sol yaprak -->
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M28,38 C28,38 18,30 16,22 C15,17 18,13 22,14 C25,13 27,16 26,20 C25,24 28,38 28,38 Z"/>
+
+    <!-- Sağ yaprak -->
+    <path
+        android:fillColor="#66BB6A"
+        android:pathData="M28,38 C28,38 38,30 40,22 C41,17 38,13 34,14 C31,13 29,16 30,20 C31,24 28,38 28,38 Z"/>
+
+    <!-- Gövde -->
+    <path
+        android:fillColor="#388E3C"
+        android:pathData="M27,37 L27,45 C27,45.552 27.448,46 28,46 C28.552,46 29,45.552 29,45 L29,37 Z"/>
+
+</vector>

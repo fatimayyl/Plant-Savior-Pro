@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
@@ -28,7 +27,8 @@ class ProfileActivity : AppCompatActivity() {
             user?.displayName ?: user?.email?.substringBefore("@") ?: ""
         findViewById<TextView>(R.id.tvEmail).text = user?.email ?: ""
 
-        findViewById<TextView>(R.id.btnBack).setOnClickListener { finish() }
+        // Geri butonu
+        findViewById<LinearLayout>(R.id.btnBack).setOnClickListener { finish() }
 
         // İstatistikler
         findViewById<LinearLayout>(R.id.menuStats).setOnClickListener {
@@ -47,7 +47,7 @@ class ProfileActivity : AppCompatActivity() {
                     val mostName = if (most != null) DiseaseAdvice.getAdvice(most).displayName else "-"
 
                     AlertDialog.Builder(this)
-                        .setTitle("📊 İstatistikler")
+                        .setTitle("İstatistikler")
                         .setMessage("Toplam Tarama: $total\n\nEn Sık Hastalık:\n$mostName")
                         .setPositiveButton("Tamam", null)
                         .show()
@@ -63,7 +63,7 @@ class ProfileActivity : AppCompatActivity() {
             etEmail.setText(user?.email ?: "")
 
             AlertDialog.Builder(this)
-                .setTitle("👤 Bilgileri Düzenle")
+                .setTitle("Bilgileri Düzenle")
                 .setView(view)
                 .setPositiveButton("Kaydet") { _, _ ->
                     val newName  = etName.text.toString().trim()
@@ -73,13 +73,13 @@ class ProfileActivity : AppCompatActivity() {
                             .setDisplayName(newName).build()
                         user?.updateProfile(updates)?.addOnSuccessListener {
                             findViewById<TextView>(R.id.tvWelcome).text = newName
-                            Toast.makeText(this, "✅ İsim güncellendi!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "İsim güncellendi!", Toast.LENGTH_SHORT).show()
                         }
                     }
                     if (newEmail.isNotEmpty() && newEmail != user?.email) {
                         user?.updateEmail(newEmail)?.addOnSuccessListener {
                             findViewById<TextView>(R.id.tvEmail).text = newEmail
-                            Toast.makeText(this, "✅ E-posta güncellendi!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "E-posta güncellendi!", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -93,7 +93,7 @@ class ProfileActivity : AppCompatActivity() {
             val etPassword = view.findViewById<EditText>(R.id.etDialogPassword)
 
             AlertDialog.Builder(this)
-                .setTitle("🔒 Şifre Değiştir")
+                .setTitle("Şifre Değiştir")
                 .setView(view)
                 .setPositiveButton("Kaydet") { _, _ ->
                     val newPass = etPassword.text.toString().trim()
@@ -102,7 +102,7 @@ class ProfileActivity : AppCompatActivity() {
                         return@setPositiveButton
                     }
                     user?.updatePassword(newPass)?.addOnSuccessListener {
-                        Toast.makeText(this, "✅ Şifre güncellendi!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Şifre güncellendi!", Toast.LENGTH_SHORT).show()
                     }
                 }
                 .setNegativeButton("İptal", null)
@@ -112,7 +112,7 @@ class ProfileActivity : AppCompatActivity() {
         // Uygulama Hakkında
         findViewById<LinearLayout>(R.id.menuAbout).setOnClickListener {
             AlertDialog.Builder(this)
-                .setTitle("ℹ️ Uygulama Hakkında")
+                .setTitle("Uygulama Hakkında")
                 .setMessage(
                     "Uygulama: Plant Savior Pro\n\n" +
                             "Versiyon: 1.0.0\n\n" +
@@ -134,30 +134,25 @@ class ProfileActivity : AppCompatActivity() {
             startActivity(Intent.createChooser(intent, "E-posta Gönder"))
         }
 
-        // Çıkış Yap
-        findViewById<Button>(R.id.btnLogout).setOnClickListener {
+        // Çıkış Yap — XML'de LinearLayout olarak değişti
+        findViewById<LinearLayout>(R.id.btnLogout).setOnClickListener {
             auth.signOut()
             startActivity(Intent(this, LoginActivity::class.java))
             finishAffinity()
         }
 
         // Bottom Nav
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
-        bottomNav.selectedItemId = R.id.nav_profile
-        bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finishAffinity()
-                    true
-                }
-                R.id.nav_history -> {
-                    startActivity(Intent(this, HistoryActivity::class.java))
-                    true
-                }
-                R.id.nav_profile -> true
-                else -> false
-            }
+        findViewById<LinearLayout>(R.id.navHome).setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+            finishAffinity()
+        }
+
+        findViewById<LinearLayout>(R.id.navHistory).setOnClickListener {
+            startActivity(Intent(this, HistoryActivity::class.java))
+        }
+
+        findViewById<LinearLayout>(R.id.navProfile).setOnClickListener {
+            // Zaten profil sayfasındayız
         }
     }
 }

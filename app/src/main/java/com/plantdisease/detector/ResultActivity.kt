@@ -4,10 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class ResultActivity : AppCompatActivity() {
 
@@ -23,21 +21,22 @@ class ResultActivity : AppCompatActivity() {
         val advice = DiseaseAdvice.getAdvice(label)
         val confidencePct = confidence * 100
 
-        // Eski progress bar satırlarını sil, bunu ekle:
+        // Circular progress
         val circularProgress = findViewById<CircularProgressView>(R.id.circularProgress)
         circularProgress.setProgress(confidencePct, "")
 
+        // Teşhis adı
         findViewById<TextView>(R.id.tvResultDiseaseName).text = advice.displayName
 
-
+        // Güven etiketi
         findViewById<TextView>(R.id.tvConfidenceLabel).text = when {
             confidencePct >= 90 -> "✅ Çok Yüksek Güven"
             confidencePct >= 70 -> "👍 Yüksek Güven"
             confidencePct >= 50 -> "⚠️ Orta Güven"
-            else -> "❗ Düşük Güven"
+            else                -> "❗ Düşük Güven"
         }
 
-        // Güven düşükse uyarı göster
+        // Güven düşükse uyarı
         if (confidencePct < 50) {
             androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("⚠️ Düşük Güven")
@@ -46,7 +45,7 @@ class ResultActivity : AppCompatActivity() {
                 .show()
         }
 
-        // Diğer hastalıklar
+        // Diğer olası hastalıklar
         val layoutOther = findViewById<LinearLayout>(R.id.layoutOtherDiseases)
         allScores.entries
             .filter { it.key != label }
@@ -77,7 +76,7 @@ class ResultActivity : AppCompatActivity() {
             }
 
         // Geri butonu
-        findViewById<TextView>(R.id.btnBack).setOnClickListener {
+        findViewById<LinearLayout>(R.id.btnBack).setOnClickListener {
             finish()
         }
 
@@ -90,24 +89,17 @@ class ResultActivity : AppCompatActivity() {
         }
 
         // Bottom Nav
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
-        bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finishAffinity()
-                    true
-                }
-                R.id.nav_history -> {
-                    startActivity(Intent(this, HistoryActivity::class.java))
-                    true
-                }
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
-                    true
-                }
-                else -> false
-            }
+        findViewById<LinearLayout>(R.id.navHome).setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+            finishAffinity()
+        }
+
+        findViewById<LinearLayout>(R.id.navHistory).setOnClickListener {
+            startActivity(Intent(this, HistoryActivity::class.java))
+        }
+
+        findViewById<LinearLayout>(R.id.navProfile).setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
     }
 }

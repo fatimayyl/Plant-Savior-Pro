@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvDiseaseName: TextView
     private lateinit var tvConfidence: TextView
     private lateinit var btnAdvice: Button
+    private lateinit var layoutPlaceholder: LinearLayout
 
     private var selectedBitmap: Bitmap? = null
     private lateinit var classifier: Classifier
@@ -50,6 +51,7 @@ class MainActivity : AppCompatActivity() {
                 selectedBitmap = BitmapFactory.decodeStream(stream)
                 imgPreview.setImageBitmap(selectedBitmap)
                 imgPreview.visibility = View.VISIBLE
+                layoutPlaceholder.visibility = View.GONE
                 btnAnalyze.visibility = View.VISIBLE
                 layoutResult.visibility = View.GONE
             }
@@ -65,13 +67,13 @@ class MainActivity : AppCompatActivity() {
                 selectedBitmap = it
                 imgPreview.setImageBitmap(it)
                 imgPreview.visibility = View.VISIBLE
+                layoutPlaceholder.visibility = View.GONE
                 btnAnalyze.visibility = View.VISIBLE
                 layoutResult.visibility = View.GONE
             }
         }
     }
 
-    // Kamera izin launcher
     private val requestCameraPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -86,42 +88,40 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        imgPreview    = findViewById(R.id.imgPreview)
-        btnGallery    = findViewById(R.id.btnGallery)
-        btnCamera     = findViewById(R.id.btnCamera)
-        btnAnalyze    = findViewById(R.id.btnAnalyze)
-        progressBar   = findViewById(R.id.progressBar)
-        layoutResult  = findViewById(R.id.layoutResult)
-        tvDiseaseName = findViewById(R.id.tvDiseaseName)
-        tvConfidence  = findViewById(R.id.tvConfidence)
-        btnAdvice     = findViewById(R.id.btnAdvice)
-
-        classifier = Classifier(this)
         supportActionBar?.hide()
 
-        val bottomNav = findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNav)
-        bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> true
-                R.id.nav_history -> {
-                    startActivity(Intent(this, HistoryActivity::class.java))
-                    true
-                }
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
-                    true
-                }
-                else -> false
-            }
+        // View'ları bağla
+        imgPreview       = findViewById(R.id.imgPreview)
+        btnGallery       = findViewById(R.id.btnGallery)
+        btnCamera        = findViewById(R.id.btnCamera)
+        btnAnalyze       = findViewById(R.id.btnAnalyze)
+        progressBar      = findViewById(R.id.progressBar)
+        layoutResult     = findViewById(R.id.layoutResult)
+        tvDiseaseName    = findViewById(R.id.tvDiseaseName)
+        tvConfidence     = findViewById(R.id.tvConfidence)
+        btnAdvice        = findViewById(R.id.btnAdvice)
+        layoutPlaceholder = findViewById(R.id.layoutPlaceholder)
+
+        classifier = Classifier(this)
+
+        // Bottom Navigation
+        findViewById<LinearLayout>(R.id.navHome).setOnClickListener {
+            // Zaten ana sayfadayız
+        }
+        findViewById<LinearLayout>(R.id.navHistory).setOnClickListener {
+            startActivity(Intent(this, HistoryActivity::class.java))
+        }
+        findViewById<LinearLayout>(R.id.navProfile).setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
 
+        // Galeri
         btnGallery.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             galleryLauncher.launch(intent)
         }
 
-        // Kamera izin kontrolü
+        // Kamera
         btnCamera.setOnClickListener {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -132,12 +132,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Analiz Et
         btnAnalyze.setOnClickListener {
             selectedBitmap?.let { bitmap ->
                 analyzeImage(bitmap)
             }
         }
 
+        // Tavsiye
         btnAdvice.setOnClickListener {
             lastResult?.let { result ->
                 val intent = Intent(this, AdviceActivity::class.java)
@@ -154,6 +156,7 @@ class MainActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             val result = classifier.classify(bitmap)
+            lastResult = result
 
             withContext(Dispatchers.Main) {
                 progressBar.visibility = View.GONE
@@ -164,9 +167,9 @@ class MainActivity : AppCompatActivity() {
                 if (uid != null) {
                     val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
                     val record = hashMapOf(
-                        "disease" to result.label,
+                        "disease"    to result.label,
                         "confidence" to result.confidence,
-                        "timestamp" to System.currentTimeMillis()
+                        "timestamp"  to System.currentTimeMillis()
                     )
                     db.collection("users").document(uid)
                         .collection("history")
@@ -181,23 +184,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-    private fun formatDiseaseName(label: String): String {
-        return when (label) {
-            "Tomato_Bacterial_spot"                       -> "🦠 Bakteriyel Leke"
-            "Tomato_Early_blight"                         -> "🍂 Erken Yanıklık"
-            "Tomato_Late_blight"                          -> "🌧️ Geç Yanıklık"
-            "Tomato_Leaf_Mold"                            -> "🍃 Yaprak Küfü"
-            "Tomato_Septoria_leaf_spot"                   -> "🔵 Septoria Yaprak Lekesi"
-            "Tomato_Spider_mites_Two_spotted_spider_mite" -> "🕷️ Kırmızı Örümcek"
-            "Tomato__Target_Spot"                         -> "🎯 Hedef Leke"
-            "Tomato__Tomato_YellowLeaf__Curl_Virus"       -> "🟡 Sarı Yaprak Kıvırcıklık Virüsü"
-            "Tomato__Tomato_mosaic_virus"                 -> "🦠 Mozaik Virüsü"
-            "Tomato_healthy"                              -> "✅ Sağlıklı Yaprak"
-            else                                          -> label
-        }
-    }
-
 
     override fun onDestroy() {
         super.onDestroy()

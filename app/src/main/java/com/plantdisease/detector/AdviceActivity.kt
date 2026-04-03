@@ -2,9 +2,9 @@ package com.plantdisease.detector
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class AdviceActivity : AppCompatActivity() {
 
@@ -26,7 +26,7 @@ class AdviceActivity : AppCompatActivity() {
         tvChemical    = findViewById(R.id.tvChemical)
 
         // Geri butonu
-        findViewById<TextView>(R.id.btnBack).setOnClickListener {
+        findViewById<LinearLayout>(R.id.btnBack).setOnClickListener {
             finish()
         }
 
@@ -42,24 +42,17 @@ class AdviceActivity : AppCompatActivity() {
         tvChemical.text    = advice.chemical
 
         // Bottom Nav
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
-        bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finishAffinity()
-                    true
-                }
-                R.id.nav_history -> {
-                    startActivity(Intent(this, HistoryActivity::class.java))
-                    true
-                }
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
-                    true
-                }
-                else -> false
-            }
+        findViewById<LinearLayout>(R.id.navHome).setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+            finishAffinity()
+        }
+
+        findViewById<LinearLayout>(R.id.navHistory).setOnClickListener {
+            startActivity(Intent(this, HistoryActivity::class.java))
+        }
+
+        findViewById<LinearLayout>(R.id.navProfile).setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
     }
 }
