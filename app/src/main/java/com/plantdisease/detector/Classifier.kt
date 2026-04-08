@@ -16,7 +16,7 @@ class Classifier(private val context: Context) {
 
     private val IMG_SIZE    = 224
     private val NUM_CLASSES = 10
-    private val BINARY_THRESHOLD = 0.5f  // binary_threshold.png'den kontrol et
+    private val BINARY_THRESHOLD = 0.75f // binary_threshold.png'den kontrol et
 
     data class Result(
         val label: String,
@@ -76,7 +76,12 @@ class Classifier(private val context: Context) {
         val input  = toByteBuffer01(bitmap)
         val output = Array(1) { FloatArray(1) }
         binaryInterpreter?.run(input, output)
-        return output[0][0] >= BINARY_THRESHOLD
+        val score = output[0][0]
+
+        // GEÇİCİ LOG — binary skoru görüntüle
+        android.util.Log.d("BINARY_MODEL", "Binary score: $score | threshold: $BINARY_THRESHOLD | isLeaf: ${score >= BINARY_THRESHOLD}")
+
+        return score >= BINARY_THRESHOLD
     }
 
     // ── Ana sınıflandırma ───────────────────────────────────
