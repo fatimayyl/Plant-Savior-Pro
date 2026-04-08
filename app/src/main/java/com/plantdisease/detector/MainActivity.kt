@@ -156,13 +156,24 @@ class MainActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             val result = classifier.classify(bitmap)
-            lastResult = result
 
             withContext(Dispatchers.Main) {
                 progressBar.visibility = View.GONE
                 btnAnalyze.isEnabled = true
 
-                // Firestore'a kaydet
+                // ── YENİ: Yaprak tespit edilmediyse uyarı ver, devam etme ──
+                if (!result.isLeafDetected) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "⚠️ Lütfen domates yaprağı fotoğrafı çekin",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@withContext  // ResultActivity'ye gitme
+                }
+
+                // ── Aşağısı tamamen aynı ────────────────────────────────
+                lastResult = result
+
                 val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
                 if (uid != null) {
                     val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()

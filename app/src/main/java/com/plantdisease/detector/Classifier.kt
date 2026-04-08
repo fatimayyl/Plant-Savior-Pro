@@ -11,36 +11,42 @@ import java.nio.channels.FileChannel
 class Classifier(private val context: Context) {
 
     private var interpreter: Interpreter? = null
+    private var binaryInterpreter: Interpreter? = null
     private var labels: List<String> = emptyList()
 
-    private val IMG_SIZE = 224
+    private val IMG_SIZE    = 224
     private val NUM_CLASSES = 10
+    private val BINARY_THRESHOLD = 0.5f  // binary_threshold.png'den kontrol et
 
     data class Result(
         val label: String,
         val confidence: Float,
-        val allScores: Map<String, Float>
+        val allScores: Map<String, Float>,
+        val isLeafDetected: Boolean = true
     )
 
     init {
         loadModel()
+        loadBinaryModel()
         loadLabels()
     }
 
+    // ── Ana model (EfficientNet — [0,255]) ──────────────────
     private fun loadModel() {
-        val assetManager = context.assets
-        val fileDescriptor = assetManager.openFd("tomato_efficientnet_lite_quant.tflite")
-        val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
-        val fileChannel = inputStream.channel
-        val modelBuffer = fileChannel.map(
-            FileChannel.MapMode.READ_ONLY,
-            fileDescriptor.startOffset,
-            fileDescriptor.declaredLength
+        val fd     = context.assets.openFd("tomato_efficientnet_lite_quant.tflite")
+        val buffer = FileInputStream(fd.fileDescriptor).channel.map(
+            FileChannel.MapMode.READ_ONLY, fd.startOffset, fd.declaredLength
         )
+        interpreter = Interpreter(buffer, Interpreter.Options().apply { setNumThreads(4) })
+    }
 
-        val options = Interpreter.Options()
-        options.setNumThreads(4)
-        interpreter = Interpreter(modelBuffer, options)
+    // ── Binary model (MobileNetV2 — [0,1]) ──────────────────
+    private fun loadBinaryModel() {
+        val fd     = context.assets.openFd("binary_classifier.tflite")
+        val buffer = FileInputStream(fd.fileDescriptor).channel.map(
+            FileChannel.MapMode.READ_ONLY, fd.startOffset, fd.declaredLength
+        )
+        binaryInterpreter = Interpreter(buffer, Interpreter.Options().apply { setNumThreads(4) })
     }
 
     private fun loadLabels() {
@@ -50,43 +56,73 @@ class Classifier(private val context: Context) {
             .filter { it.isNotBlank() }
     }
 
-    fun classify(bitmap: Bitmap): Result {
+    // ── Bitmap → ByteBuffer [0,1] — Binary model için ───────
+    private fun toByteBuffer01(bitmap: Bitmap): ByteBuffer {
         val resized = Bitmap.createScaledBitmap(bitmap, IMG_SIZE, IMG_SIZE, true)
-
-        val inputBuffer = ByteBuffer.allocateDirect(1 * IMG_SIZE * IMG_SIZE * 3 * 4)
-        inputBuffer.order(ByteOrder.nativeOrder())
-
-        val pixels = IntArray(IMG_SIZE * IMG_SIZE)
+        val buf     = ByteBuffer.allocateDirect(1 * IMG_SIZE * IMG_SIZE * 3 * 4)
+        buf.order(ByteOrder.nativeOrder())
+        val pixels  = IntArray(IMG_SIZE * IMG_SIZE)
         resized.getPixels(pixels, 0, IMG_SIZE, 0, 0, IMG_SIZE, IMG_SIZE)
-
         for (pixel in pixels) {
-            val r = ((pixel shr 16) and 0xFF).toFloat()
-            val g = ((pixel shr 8)  and 0xFF).toFloat()
-            val b = ( pixel         and 0xFF).toFloat()
+            buf.putFloat(((pixel shr 16) and 0xFF) / 255.0f)
+            buf.putFloat(((pixel shr 8)  and 0xFF) / 255.0f)
+            buf.putFloat(( pixel         and 0xFF) / 255.0f)
+        }
+        return buf
+    }
 
-            // EfficientNet preprocess_input: değerleri olduğu gibi kullan (0-255)
-            inputBuffer.putFloat(r)
-            inputBuffer.putFloat(g)
-            inputBuffer.putFloat(b)
+    // ── Yaprak kontrolü ─────────────────────────────────────
+    private fun isLeaf(bitmap: Bitmap): Boolean {
+        val input  = toByteBuffer01(bitmap)
+        val output = Array(1) { FloatArray(1) }
+        binaryInterpreter?.run(input, output)
+        return output[0][0] >= BINARY_THRESHOLD
+    }
+
+    // ── Ana sınıflandırma ───────────────────────────────────
+    fun classify(bitmap: Bitmap): Result {
+
+        // Önce yaprak kontrolü
+        if (!isLeaf(bitmap)) {
+            return Result(
+                label          = "Domates yaprağı tespit edilemedi",
+                confidence     = 0f,
+                allScores      = emptyMap(),
+                isLeafDetected = false
+            )
+        }
+
+        // Yaprak varsa hastalık tahmini (EfficientNet — [0,255])
+        val resized = Bitmap.createScaledBitmap(bitmap, IMG_SIZE, IMG_SIZE, true)
+        val buf     = ByteBuffer.allocateDirect(1 * IMG_SIZE * IMG_SIZE * 3 * 4)
+        buf.order(ByteOrder.nativeOrder())
+        val pixels  = IntArray(IMG_SIZE * IMG_SIZE)
+        resized.getPixels(pixels, 0, IMG_SIZE, 0, 0, IMG_SIZE, IMG_SIZE)
+        for (pixel in pixels) {
+            buf.putFloat(((pixel shr 16) and 0xFF).toFloat())
+            buf.putFloat(((pixel shr 8)  and 0xFF).toFloat())
+            buf.putFloat(( pixel         and 0xFF).toFloat())
         }
 
         val output = Array(1) { FloatArray(NUM_CLASSES) }
-        interpreter?.run(inputBuffer, output)
+        interpreter?.run(buf, output)
 
         val scores = output[0]
         val maxIdx = scores.indices.maxByOrNull { scores[it] } ?: 0
-        val allScores = labels.mapIndexed { i, label ->
-            label to (if (i < scores.size) scores[i] else 0f)
+        val allScores = labels.mapIndexed { i, lbl ->
+            lbl to (if (i < scores.size) scores[i] else 0f)
         }.toMap()
 
         return Result(
-            label = labels.getOrElse(maxIdx) { "Bilinmiyor" },
-            confidence = scores[maxIdx],
-            allScores = allScores
+            label          = labels.getOrElse(maxIdx) { "Bilinmiyor" },
+            confidence     = scores[maxIdx],
+            allScores      = allScores,
+            isLeafDetected = true
         )
     }
 
     fun close() {
         interpreter?.close()
+        binaryInterpreter?.close()
     }
 }
