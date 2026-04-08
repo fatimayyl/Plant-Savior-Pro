@@ -16,7 +16,7 @@ class Classifier(private val context: Context) {
 
     private val IMG_SIZE    = 224
     private val NUM_CLASSES = 10
-    private val BINARY_THRESHOLD = 0.75f // binary_threshold.png'den kontrol et
+    private val BINARY_THRESHOLD = 0.6f // binary_threshold.png'den kontrol et
 
     data class Result(
         val label: String,
