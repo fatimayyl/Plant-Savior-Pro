@@ -20,7 +20,7 @@ class Classifier(private val context: Context) {
     private val NUM_CLASSES = 10
 
     // Yaprak olmayan görsel için eşik
-    private val LEAF_CONFIDENCE_THRESHOLD = 0.10f
+    private val LEAF_CONFIDENCE_THRESHOLD = 0.30f
 
     data class Result(
         val label: String,
