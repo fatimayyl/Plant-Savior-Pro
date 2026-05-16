@@ -205,7 +205,7 @@ class MainActivity : AppCompatActivity() {
         db.collection("feedback").get()
             .addOnSuccessListener { docs ->
                 val count = docs.size()
-                if (count > 0 && count % 1 == 0) {
+                if (count > 0 && count % 100 == 0) {
                     sendAdminEmail(count)
                 }
             }
@@ -231,6 +231,7 @@ class MainActivity : AppCompatActivity() {
                     "service_id": "service_0idw1uo",
                     "template_id": "template_qn6yu2h",
                     "user_id": "_f0LIgJRWB6z8Ant5",
+                    "accessToken": "__hdfYk9pdHRSOKExGAlw",
                     "template_params": {
                         "count": "$count",
                         "message": "$count geri bildirim birikti! Model güncelleme zamanı.",
