@@ -12,6 +12,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.android.material.textfield.TextInputEditText
+import android.widget.CheckBox
 
 class LoginActivity : AppCompatActivity() {
 
@@ -36,17 +37,19 @@ class LoginActivity : AppCompatActivity() {
         val btnLogin   = findViewById<Button>(R.id.btnLogin)
         val btnGoogle  = findViewById<Button>(R.id.btnGoogleLogin)
         val tvRegister = findViewById<TextView>(R.id.tvRegister)
+        val cbKvkk     = findViewById<CheckBox>(R.id.cbKvkk)  // ← EKLE
 
-        // E-posta ile giriş
         btnLogin.setOnClickListener {
+            if (!cbKvkk.isChecked) {
+                Toast.makeText(this, "Lütfen KVKK metnini onaylayın!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             val email    = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
-
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "E-posta ve şifre giriniz!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {

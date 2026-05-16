@@ -49,20 +49,13 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="PLANT SAVIOR"
+                    android:text="Veridia"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#1B5E20"
                     android:letterSpacing="0.05"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=" PRO"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="#43A047"
-                    android:letterSpacing="0.1"/>
+
 
             </LinearLayout>
 
@@ -306,6 +299,26 @@
                     android:textSize="12sp"
                     android:textColor="#F57F17"
                     android:lineSpacingMultiplier="1.5"/>
+
+            </LinearLayout>
+
+            <!-- Ata Tohum Atfı -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#E8F5E9"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="🌾 Anadolu'nun binlerce yıllık tarım bilgeliği ile modern yapay zekanın buluşması. Ata tohumlarımızı, geleneksel tarım kültürümüzü ve çiftçimizin emeğini korumak için buradayız."
+                    android:textSize="13sp"
+                    android:textColor="#2E7D32"
+                    android:lineSpacingMultiplier="1.5"
+                    android:fontFamily="serif"/>
 
             </LinearLayout>
 

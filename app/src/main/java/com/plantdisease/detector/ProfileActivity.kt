@@ -32,26 +32,7 @@ class ProfileActivity : AppCompatActivity() {
 
         // İstatistikler
         findViewById<LinearLayout>(R.id.menuStats).setOnClickListener {
-            val uid = user?.uid ?: return@setOnClickListener
-            FirebaseFirestore.getInstance()
-                .collection("users").document(uid)
-                .collection("history").get()
-                .addOnSuccessListener { docs ->
-                    val total = docs.size()
-                    val diseaseCount = mutableMapOf<String, Int>()
-                    docs.forEach { doc ->
-                        val d = doc.getString("disease") ?: return@forEach
-                        diseaseCount[d] = (diseaseCount[d] ?: 0) + 1
-                    }
-                    val most = diseaseCount.maxByOrNull { it.value }?.key
-                    val mostName = if (most != null) DiseaseAdvice.getAdvice(most).displayName else "-"
-
-                    AlertDialog.Builder(this)
-                        .setTitle("İstatistikler")
-                        .setMessage("Toplam Tarama: $total\n\nEn Sık Hastalık:\n$mostName")
-                        .setPositiveButton("Tamam", null)
-                        .show()
-                }
+            startActivity(Intent(this, FeedbackStatsActivity::class.java))
         }
 
         // Bilgileri Düzenle
@@ -116,7 +97,7 @@ class ProfileActivity : AppCompatActivity() {
                 .setMessage(
                     "Uygulama: Plant Savior Pro\n\n" +
                             "Versiyon: 1.0.0\n\n" +
-                            "Geliştiriciler:\nFatıma Yaylı\nAmine Cemile Doğru\n\n" +
+                            "Geliştiriciler:\nFatıma Yaylı\nAmine Cemile Doğru\nZeynep Belemir Şuva\n" +
                             "Danışman: Doç. Dr. Selman Hızal\n\n" +
                             "Kurum: Sakarya Uygulamalı Bilimler Üniversitesi\n\n" +
                             "Proje: TÜBİTAK 2209-A"

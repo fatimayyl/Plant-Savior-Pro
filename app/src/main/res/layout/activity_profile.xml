@@ -49,20 +49,13 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="PLANT SAVIOR"
+                    android:text="Veridia"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#1B5E20"
                     android:letterSpacing="0.05"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=" PRO"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="#43A047"
-                    android:letterSpacing="0.1"/>
+
 
             </LinearLayout>
 

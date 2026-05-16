@@ -33,20 +33,13 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PLANT SAVIOR"
+                android:text="Veridia"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.05"
                 android:textColor="#1B5E20"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" PRO"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.1"
-                android:textColor="#43A047"/>
+
 
         </LinearLayout>
 
@@ -223,6 +216,31 @@
                 android:background="@null"
                 android:textSize="14sp"
                 android:theme="@style/HintStyle"/>
+
+        </LinearLayout>
+
+        <!-- KVKK -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <CheckBox
+                android:id="@+id/cbKvkk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="#2E7D32"/>
+
+            <TextView
+                android:id="@+id/tvKvkk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kişisel verilerimin işlenmesine ilişkin Aydınlatma Metni'ni okudum ve onaylıyorum."
+                android:textSize="12sp"
+                android:textColor="#555555"
+                android:lineSpacingMultiplier="1.3"/>
 
         </LinearLayout>
 

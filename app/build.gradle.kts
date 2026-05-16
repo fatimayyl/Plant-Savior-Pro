@@ -66,4 +66,8 @@ dependencies {
 
 
     implementation("com.google.firebase:firebase-firestore-ktx")
+
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-ml-modeldownloader-ktx")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }

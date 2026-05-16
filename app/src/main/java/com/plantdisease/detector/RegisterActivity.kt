@@ -15,6 +15,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import android.widget.CheckBox
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -56,6 +57,12 @@ class RegisterActivity : AppCompatActivity() {
         val tvLogin           = findViewById<TextView>(R.id.tvLogin)
 
         btnRegister.setOnClickListener {
+            val cbKvkk = findViewById<CheckBox>(R.id.cbKvkk)
+            if (!cbKvkk.isChecked) {
+                Toast.makeText(this, "Lütfen KVKK metnini onaylayın!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val name            = etName.text.toString().trim()
             val email           = etEmail.text.toString().trim()
             val password        = etPassword.text.toString().trim()

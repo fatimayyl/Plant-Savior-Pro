@@ -23,6 +23,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class MainActivity : AppCompatActivity() {
 
@@ -161,17 +163,15 @@ class MainActivity : AppCompatActivity() {
                 progressBar.visibility = View.GONE
                 btnAnalyze.isEnabled = true
 
-                // ── YENİ: Yaprak tespit edilmediyse uyarı ver, devam etme ──
                 if (!result.isLeafDetected) {
                     Toast.makeText(
                         this@MainActivity,
                         "⚠️ Lütfen domates yaprağı fotoğrafı çekin",
                         Toast.LENGTH_LONG
                     ).show()
-                    return@withContext  // ResultActivity'ye gitme
+                    return@withContext
                 }
 
-                // ── Aşağısı tamamen aynı ────────────────────────────────
                 lastResult = result
 
                 val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
@@ -187,6 +187,9 @@ class MainActivity : AppCompatActivity() {
                         .add(record)
                 }
 
+                // Feedback sayısını kontrol et
+                checkFeedbackCountAndNotify()
+
                 val intent = Intent(this@MainActivity, ResultActivity::class.java)
                 intent.putExtra("disease_label", result.label)
                 intent.putExtra("confidence", result.confidence)
@@ -194,8 +197,69 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
+    } 
+
+
+    private fun checkFeedbackCountAndNotify() {
+        val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+        db.collection("feedback").get()
+            .addOnSuccessListener { docs ->
+                val count = docs.size()
+                if (count > 0 && count % 1 == 0) {
+                    sendAdminEmail(count)
+                }
+            }
     }
 
+    private fun sendAdminEmail(count: Int) {
+        val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+        val notification = hashMapOf(
+            "type"      to "feedback_milestone",
+            "count"     to count,
+            "message"   to "$count geri bildirim birikti! Model güncelleme zamanı.",
+            "timestamp" to System.currentTimeMillis(),
+            "isRead"    to false
+        )
+        db.collection("admin_notifications").add(notification)
+
+        // EmailJS ile e-posta gönder
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val client = okhttp3.OkHttpClient()
+                val json = """
+                {
+                    "service_id": "service_0idw1uo",
+                    "template_id": "template_qn6yu2h",
+                    "user_id": "_f0LIgJRWB6z8Ant5",
+                    "template_params": {
+                        "count": "$count",
+                        "message": "$count geri bildirim birikti! Model güncelleme zamanı.",
+                        "date": "${java.util.Date()}",
+                        "name": "Veridia Pro Sistem"
+                    }
+                }
+            """.trimIndent()
+
+                val mediaType = "application/json".toMediaType()
+                val body = json.toRequestBody(mediaType)
+
+                val request = okhttp3.Request.Builder()
+                    .url("https://api.emailjs.com/api/v1.0/email/send")
+                    .addHeader("Content-Type", "application/json")
+                    .post(body)
+                    .build()
+
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    android.util.Log.d("EMAIL", "✅ Admin e-postası gönderildi!")
+                } else {
+                    android.util.Log.e("EMAIL", "❌ Hata: ${response.code} ${response.body?.string()}")
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("EMAIL", "❌ Exception: ${e.message}")
+            }
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
         classifier.close()
